@@ -66,9 +66,10 @@ socket.on('chat', function(data){
         return { containerType: 'lighter' }
     }();
 
+    // Dependency on moment.js
     output.innerHTML += '<div class="chat-container ' + chatContainerSettings.containerType + '">' +
                         '<span class="chat-username">' + data.userName + '</span>' +
-                        '<span class="chat-datestamp">' + data.date + '</span>' +
+                        '<span class="chat-datestamp">' + moment(data.date).calendar() + '</span>' +
                         '<p class="chat-message">' + data.message + '</p>'
 });
 
