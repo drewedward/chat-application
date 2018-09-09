@@ -6,15 +6,13 @@
 
 //TODOS: Persist messages for clients logging into chat session
 
+var userName = '_' + Math.random().toString(36).substr(2, 9);
+
 // Query DOM
 var message = document.getElementById('message'),
-    userName = document.getElementById('userName'),
     btn = document.getElementById('send'),
     output = document.getElementById('output'),
     feedback = document.getElementById('feedback');
-
-// Set username
-userName.value = '_' + Math.random().toString(36).substr(2, 9);;
 
 // Make connection and create a socket unique to client
 // We have io library due to CDN reference in index.html
@@ -24,7 +22,7 @@ var socket = io.connect('http://localhost:4000');
 // Emits initial event to establish a new connection was made
 socket.emit('connectedUser', {
     date: new Date(),
-    userName: userName.value
+    userName: userName
 });
 
 // Emit events based on user input
@@ -38,7 +36,7 @@ btn.addEventListener('click', function(){
         date: new Date(),
 
         // username info
-        userName: userName.value
+        userName: userName
     })
 });
 
@@ -48,7 +46,7 @@ message.addEventListener('keypress', function(){
         message: 'typing...',
 
         // user info
-        userName: userName.value
+        userName: userName
     })
 });
 
@@ -60,7 +58,7 @@ socket.on('chat', function(data){
     feedback.innerHTML = '';
 
     var chatContainerSettings = function(){
-        if (data.userName === userName.value){
+        if (data.userName === userName){
             return { containerType: 'darker' }
         }
 
