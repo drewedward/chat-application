@@ -22,7 +22,7 @@ userName.value = '_' + Math.random().toString(36).substr(2, 9);;
 var socket = io.connect('http://localhost:4000');
 
 // Emits initial event to establish a new connection was made
-socket.emit('newConnection', {
+socket.emit('connectedUser', {
     date: new Date(),
     userName: userName.value
 });
@@ -79,7 +79,14 @@ socket.on('typing', function(data){
     feedback.innerHTML = '<p><em>' + data.userName + ' is typing...</em></p>';
 });
 
-// new connection handler
-socket.on('newConnection', function(data){
+// connected user handler
+socket.on('connectedUser', function(data){
+    console.log(data.activeUsers);
     output.innerHTML += '<p class="chat-new-user"><em>' + data.userName + ' has joined the chat</em></p>';
-})
+});
+
+// disconnect handler
+socket.on('disconnectedUser', function(data){
+    console.log(data.activeUsers);
+    output.innerHTML += '<p class="chat-new-user"><em>' + data.disconnectedUserName + ' has left the chat</em></p>';
+});
