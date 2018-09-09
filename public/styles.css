@@ -24,8 +24,8 @@ h2{
 
 #feedback p{
     color: #aaa;
-    padding: 14px 0px;
-    margin: 0 20px;
+    /* shared padding between chat-container and new-user */
+    padding-left: 10px;
 }
 
 label{
@@ -95,6 +95,10 @@ button{
     font-size: smaller;
     font-weight: lighter;
     color: darkgrey;
+}
+
+.chat-new-user {
+    padding-left: 10px;
 }
 
 /* .container img {

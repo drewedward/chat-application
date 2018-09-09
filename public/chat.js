@@ -1,20 +1,10 @@
-//TODOS: Add randomizer for user profile (handle name, user text user)
-var generatedName = '_' + Math.random().toString(36).substr(2, 9);
-
 //TODOS: Create event to end typing message if user deletes their message
-
-//TODOS: Create event to show when someone joins the chat
 
 //TODOS: Create Active Members panel
 
 //TODOS: Create Current User panel
 
 //TODOS: Persist messages for clients logging into chat session
-
-// Make connection and create a socket unique to client
-// We have io library due to CDN reference in index.html
-// This connection hits server at the specified port and receives information about the unique socket created for the client
-var socket = io.connect('http://localhost:4000');
 
 // Query DOM
 var message = document.getElementById('message'),
@@ -24,9 +14,20 @@ var message = document.getElementById('message'),
     feedback = document.getElementById('feedback');
 
 // Set username
-userName.value = generatedName;
+userName.value = '_' + Math.random().toString(36).substr(2, 9);;
 
-// Emit events
+// Make connection and create a socket unique to client
+// We have io library due to CDN reference in index.html
+// This connection hits server at the specified port and receives information about the unique socket created for the client
+var socket = io.connect('http://localhost:4000');
+
+// Emits initial event to establish a new connection was made
+socket.emit('newConnection', {
+    date: new Date(),
+    userName: userName.value
+});
+
+// Emit events based on user input
 btn.addEventListener('click', function(){
     console.log('sending chat message for ' + socket.id);
     // arg 1: name of variable that we are sending
@@ -59,7 +60,7 @@ socket.on('chat', function(data){
     feedback.innerHTML = '';
 
     var chatContainerSettings = function(){
-        if (data.userName === generatedName){
+        if (data.userName === userName.value){
             return { containerType: 'darker' }
         }
 
@@ -77,3 +78,8 @@ socket.on('chat', function(data){
 socket.on('typing', function(data){
     feedback.innerHTML = '<p><em>' + data.userName + ' is typing...</em></p>';
 });
+
+// new connection handler
+socket.on('newConnection', function(data){
+    output.innerHTML += '<p class="chat-new-user"><em>' + data.userName + ' has joined the chat</em></p>';
+})
