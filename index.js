@@ -68,4 +68,9 @@ io.on('connection', function(clientSocket){
     clientSocket.on('typing', function(data){
         clientSocket.broadcast.emit('typing', data); // use the client-specific socket to emit to every other client except the current one
     });
+
+    // registers the new socket for 'stoppedTyping' subject
+    clientSocket.on('stoppedTyping', function(){
+        clientSocket.broadcast.emit('stoppedTyping');
+    });
 }) 

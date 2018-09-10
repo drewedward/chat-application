@@ -1,8 +1,8 @@
-//TODOS: Create event to end typing message if user deletes their message
-
 //TODOS: Create event to handle multiple people typing at once
 
 //TODOS: Persist messages for clients logging into chat session
+
+//TODOS: Add ability to send or press enter on message and it will remove text in input
 
 var userName = '_' + Math.random().toString(36).substr(2, 9);
 
@@ -41,14 +41,21 @@ btn.addEventListener('click', function(){
     })
 });
 
+var timer = null;
 message.addEventListener('keypress', function(){
+    clearTimeout(timer);
+
+    timer = setTimeout(function(){
+        socket.emit('stoppedTyping');
+    }, 5000);
+
     socket.emit('typing', {
         // message info
         message: 'typing...',
 
         // user info
         userName: userName
-    })
+    });
 });
 
 // Listen for events for client's socket
@@ -57,6 +64,7 @@ socket.on('chat', function(data){
     feedback.innerHTML = '';
 
     var chatContainerSettings = function(){
+        // should this be identfying by socket id rather than userName in case duplicate userNames?
         if (data.userName === userName){
             return { containerType: 'darker' }
         }
@@ -74,6 +82,11 @@ socket.on('chat', function(data){
 // typing handler
 socket.on('typing', function(data){
     feedback.innerHTML = '<p><em>' + data.userName + ' is typing...</em></p>';
+});
+
+// stopped typing handler
+socket.on('stoppedTyping', function(){
+    feedback.innerHTML = '';
 });
 
 // connected user handler
