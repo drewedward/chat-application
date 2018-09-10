@@ -35,7 +35,7 @@ io.on('connection', function(clientSocket){
         console.log(activeUsers);
         console.log('registered ' + data.userName + ' to socket id ' + clientSocket.id);
 
-        clientSocket.broadcast.emit('connectedUser', { userName: data.userName, activeUsers: activeUsers });
+        io.sockets.emit('connectedUser', { userName: data.userName, activeUsers: activeUsers });
     })
 
     // registers the new socket for 'disconnect' subject

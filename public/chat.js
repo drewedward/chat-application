@@ -1,8 +1,6 @@
 //TODOS: Create event to end typing message if user deletes their message
 
-//TODOS: Create Active Members panel
-
-//TODOS: Create Current User panel
+//TODOS: Create event to handle multiple people typing at once
 
 //TODOS: Persist messages for clients logging into chat session
 
@@ -12,7 +10,11 @@ var userName = '_' + Math.random().toString(36).substr(2, 9);
 var message = document.getElementById('message'),
     btn = document.getElementById('send'),
     output = document.getElementById('output'),
-    feedback = document.getElementById('feedback');
+    feedback = document.getElementById('feedback'),
+    currentUserMessage = document.getElementById('current-user-message'),
+    activeUsersList = document.getElementById('active-users-list');
+
+currentUserMessage.innerText = 'Signed in as ' + userName + '!';
 
 // Make connection and create a socket unique to client
 // We have io library due to CDN reference in index.html
@@ -27,7 +29,6 @@ socket.emit('connectedUser', {
 
 // Emit events based on user input
 btn.addEventListener('click', function(){
-    console.log('sending chat message for ' + socket.id);
     // arg 1: name of variable that we are sending
     // arg 2: the data we are sending
     socket.emit('chat', {
@@ -53,8 +54,6 @@ message.addEventListener('keypress', function(){
 // Listen for events for client's socket
 // chat handler
 socket.on('chat', function(data){
-    console.log('receiving chat message from ' + data.userName);
-
     feedback.innerHTML = '';
 
     var chatContainerSettings = function(){
@@ -79,12 +78,23 @@ socket.on('typing', function(data){
 
 // connected user handler
 socket.on('connectedUser', function(data){
-    console.log(data.activeUsers);
     output.innerHTML += '<p class="chat-new-user"><em>' + data.userName + ' has joined the chat</em></p>';
+    updateActiveUsersList(data.activeUsers);
 });
 
 // disconnect handler
 socket.on('disconnectedUser', function(data){
-    console.log(data.activeUsers);
     output.innerHTML += '<p class="chat-new-user"><em>' + data.disconnectedUserName + ' has left the chat</em></p>';
+    updateActiveUsersList(data.activeUsers);
 });
+
+updateActiveUsersList = function(activeUsers){
+    activeUsersList.innerHTML = '';
+
+    for(var i = 0; i < activeUsers.length; i++){
+        var li = document.createElement('li');
+        li.innerHTML += activeUsers[i] + '<span class="dot"></span>';
+
+        activeUsersList.appendChild(li);
+    }
+}
