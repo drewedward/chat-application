@@ -2,8 +2,6 @@
 
 //TODOS: Persist messages for clients logging into chat session
 
-//TODOS: Add ability to send or press enter on message and it will remove text in input
-
 var userName = '_' + Math.random().toString(36).substr(2, 9);
 
 // Query DOM
@@ -29,16 +27,7 @@ socket.emit('connectedUser', {
 
 // Emit events based on user input
 btn.addEventListener('click', function(){
-    // arg 1: name of variable that we are sending
-    // arg 2: the data we are sending
-    socket.emit('chat', {
-        // message info
-        message: message.value,
-        date: new Date(),
-
-        // username info
-        userName: userName
-    })
+    submitMessage();
 });
 
 var timer = null;
@@ -57,6 +46,27 @@ message.addEventListener('keypress', function(){
         userName: userName
     });
 });
+
+message.addEventListener('keyup', function(event){
+    if (event.key === 'Enter'){
+        submitMessage();
+    }
+});
+
+var submitMessage = function(){
+    // arg 1: name of variable that we are sending
+    // arg 2: the data we are sending
+    socket.emit('chat', {
+        // message info
+        message: message.value,
+        date: new Date(),
+
+        // username info
+        userName: userName
+    });
+
+    message.value = '';
+}
 
 // Listen for events for client's socket
 // chat handler
