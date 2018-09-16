@@ -2,6 +2,8 @@
 requirejs.config({
     baseUrl: 'scripts',
     paths: {
+        socketio: 'https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io',
+        moment: 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min',
         chat: 'app/chat'
     }
 });
