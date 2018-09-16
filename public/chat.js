@@ -2,9 +2,13 @@
 
 //TODOS: Persist messages for clients logging into chat session
 
-var userName = '_' + Math.random().toString(36).substr(2, 9);
+// Module Order: 
+// 1. DOM Module
+// 2. User Module
+// 3. Socket Module
+// 4. DOM Event Module
 
-// Query DOM
+// DOM Module
 var message = document.getElementById('message'),
     btn = document.getElementById('send'),
     output = document.getElementById('output'),
@@ -12,7 +16,15 @@ var message = document.getElementById('message'),
     currentUserMessage = document.getElementById('current-user-message'),
     activeUsersList = document.getElementById('active-users-list');
 
+// User Module
+var userName = '_' + Math.random().toString(36).substr(2, 9);
 currentUserMessage.innerText = 'Signed in as ' + userName + '!';
+
+// Socket Module
+// Dependencies: DOM Module, User Module 
+// Should it just be responsible for
+// 1. connecting to the socket
+// 2. associating callbacks to specific socket events?
 
 // Make connection and create a socket unique to client
 // We have io library due to CDN reference in index.html
@@ -24,49 +36,6 @@ socket.emit('connectedUser', {
     date: new Date(),
     userName: userName
 });
-
-// Emit events based on user input
-btn.addEventListener('click', function(){
-    submitMessage();
-});
-
-var timer = null;
-message.addEventListener('keypress', function(){
-    clearTimeout(timer);
-
-    timer = setTimeout(function(){
-        socket.emit('stoppedTyping');
-    }, 5000);
-
-    socket.emit('typing', {
-        // message info
-        message: 'typing...',
-
-        // user info
-        userName: userName
-    });
-});
-
-message.addEventListener('keyup', function(event){
-    if (event.key === 'Enter'){
-        submitMessage();
-    }
-});
-
-var submitMessage = function(){
-    // arg 1: name of variable that we are sending
-    // arg 2: the data we are sending
-    socket.emit('chat', {
-        // message info
-        message: message.value,
-        date: new Date(),
-
-        // username info
-        userName: userName
-    });
-
-    message.value = '';
-}
 
 // Listen for events for client's socket
 // chat handler
@@ -120,4 +89,49 @@ updateActiveUsersList = function(activeUsers){
 
         activeUsersList.appendChild(li);
     }
+}
+
+// DOM Event Handlers
+// Dependencies: DOM Module, Socket Module
+// Emit events based on user input
+btn.addEventListener('click', function(){
+    submitMessage();
+});
+
+var timer = null;
+message.addEventListener('keypress', function(){
+    clearTimeout(timer);
+
+    timer = setTimeout(function(){
+        socket.emit('stoppedTyping');
+    }, 5000);
+
+    socket.emit('typing', {
+        // message info
+        message: 'typing...',
+
+        // user info
+        userName: userName
+    });
+});
+
+message.addEventListener('keyup', function(event){
+    if (event.key === 'Enter'){
+        submitMessage();
+    }
+});
+
+var submitMessage = function(){
+    // arg 1: name of variable that we are sending
+    // arg 2: the data we are sending
+    socket.emit('chat', {
+        // message info
+        message: message.value,
+        date: new Date(),
+
+        // username info
+        userName: userName
+    });
+
+    message.value = '';
 }
