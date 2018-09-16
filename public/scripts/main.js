@@ -13,4 +13,8 @@ requirejs.config({
 });
 
 // main app logic
-requirejs(['activeUsers', 'chatInput', 'chatOutput']);
+requirejs(['user', 'socketConnection', 'activeUsers', 'chatInput', 'chatOutput'], function(){
+    // TODO: Lazy loading to prevent modules to load until user is verified
+    // TODO: Provide a sign in page to allow user to select or generate random name
+    console.log('app is loaded!')
+});
