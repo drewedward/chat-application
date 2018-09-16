@@ -8,12 +8,9 @@ requirejs.config({
         socketConnection: 'app/socket-connection',
         activeUsers: 'app/active-users',
         chatInput: 'app/chat-input',
-        chat: 'app/chat'
+        chatOutput: 'app/chat-output'
     }
 });
 
 // main app logic
-// 1. User sign in
-// 2. Establish socket connection
-// 3. Register active-users, chat-messages, chat-feedback, chat-submit
-requirejs(['chat', 'activeUsers', 'chatInput']);
+requirejs(['activeUsers', 'chatInput', 'chatOutput']);

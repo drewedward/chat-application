@@ -1,13 +1,7 @@
-define(['moment', 'user', 'socketConnection'], function(moment, user, socketConnection){
-    //TODOS: Create event to handle multiple people typing at once
-
-    //TODOS: Persist messages for clients logging into chat session
-
+define(['socketConnection', 'user', 'moment'], function(socketConnection, user, moment){
     var output = document.getElementById('output'),
         feedback = document.getElementById('feedback')
-    
-    // Chat Messages Module
-    // Listen for events for client's socket
+
     // chat handler
     socketConnection.socket.on('chat', function(data){
         feedback.innerHTML = '';
@@ -21,7 +15,6 @@ define(['moment', 'user', 'socketConnection'], function(moment, user, socketConn
             return { containerType: 'lighter' }
         }();
 
-        // Dependency on moment.js
         output.innerHTML += '<div class="chat-container ' + chatContainerSettings.containerType + '">' +
                             '<span class="chat-username">' + data.userName + '</span>' +
                             '<span class="chat-datestamp">' + moment(data.date).calendar() + '</span>' +
