@@ -1,4 +1,4 @@
-define(['socketio', 'moment'], function(io, moment){
+define(['socketio', 'moment', 'user'], function(io, moment, user){
     //TODOS: Create event to handle multiple people typing at once
 
     //TODOS: Persist messages for clients logging into chat session
@@ -9,17 +9,17 @@ define(['socketio', 'moment'], function(io, moment){
     // 3. Socket Module
     // 4. DOM Event Module
 
+    // or should it be more 
+    // Login Module - generate user, establish connections + display active users
+    // Feedback Module - controls feedback dom element to display concurrent active events
+    // Messaging Module - controls messaging display
+
     // DOM Module
     var message = document.getElementById('message'),
         btn = document.getElementById('send'),
         output = document.getElementById('output'),
         feedback = document.getElementById('feedback'),
-        currentUserMessage = document.getElementById('current-user-message'),
         activeUsersList = document.getElementById('active-users-list');
-
-    // User Module
-    var userName = '_' + Math.random().toString(36).substr(2, 9);
-    currentUserMessage.innerText = 'Signed in as ' + userName + '!';
 
     // Socket Module
     // Dependencies: DOM Module, User Module 
@@ -35,7 +35,7 @@ define(['socketio', 'moment'], function(io, moment){
     // Emits initial event to establish a new connection was made
     socket.emit('connectedUser', {
         date: new Date(),
-        userName: userName
+        userName: user.userName
     });
 
     // Listen for events for client's socket
@@ -45,7 +45,7 @@ define(['socketio', 'moment'], function(io, moment){
 
         var chatContainerSettings = function(){
             // should this be identfying by socket id rather than userName in case duplicate userNames?
-            if (data.userName === userName){
+            if (data.userName === user.userName){
                 return { containerType: 'darker' }
             }
 
@@ -112,7 +112,7 @@ define(['socketio', 'moment'], function(io, moment){
             message: 'typing...',
 
             // user info
-            userName: userName
+            userName: user.userName
         });
     });
 
@@ -131,7 +131,7 @@ define(['socketio', 'moment'], function(io, moment){
             date: new Date(),
 
             // username info
-            userName: userName
+            userName: user.userName
         });
 
         message.value = '';
