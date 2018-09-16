@@ -1,4 +1,4 @@
-define(['socketio', 'moment', 'user'], function(io, moment, user){
+define(['moment', 'user', 'socketConnection'], function(moment, user, socketConnection){
     //TODOS: Create event to handle multiple people typing at once
 
     //TODOS: Persist messages for clients logging into chat session
@@ -27,20 +27,10 @@ define(['socketio', 'moment', 'user'], function(io, moment, user){
     // 1. connecting to the socket
     // 2. associating callbacks to specific socket events?
 
-    // Make connection and create a socket unique to client
-    // We have io library due to CDN reference in index.html
-    // This connection hits server at the specified port and receives information about the unique socket created for the client
-    var socket = io.connect('http://localhost:4000');
-
-    // Emits initial event to establish a new connection was made
-    socket.emit('connectedUser', {
-        date: new Date(),
-        userName: user.userName
-    });
 
     // Listen for events for client's socket
     // chat handler
-    socket.on('chat', function(data){
+    socketConnection.socket.on('chat', function(data){
         feedback.innerHTML = '';
 
         var chatContainerSettings = function(){
@@ -60,23 +50,23 @@ define(['socketio', 'moment', 'user'], function(io, moment, user){
     });
 
     // typing handler
-    socket.on('typing', function(data){
+    socketConnection.socket.on('typing', function(data){
         feedback.innerHTML = '<p><em>' + data.userName + ' is typing...</em></p>';
     });
 
     // stopped typing handler
-    socket.on('stoppedTyping', function(){
+    socketConnection.socket.on('stoppedTyping', function(){
         feedback.innerHTML = '';
     });
 
     // connected user handler
-    socket.on('connectedUser', function(data){
+    socketConnection.socket.on('connectedUser', function(data){
         output.innerHTML += '<p class="chat-new-user"><em>' + data.userName + ' has joined the chat</em></p>';
         updateActiveUsersList(data.activeUsers);
     });
 
     // disconnect handler
-    socket.on('disconnectedUser', function(data){
+    socketConnection.socket.on('disconnectedUser', function(data){
         output.innerHTML += '<p class="chat-new-user"><em>' + data.disconnectedUserName + ' has left the chat</em></p>';
         updateActiveUsersList(data.activeUsers);
     });
@@ -104,10 +94,10 @@ define(['socketio', 'moment', 'user'], function(io, moment, user){
         clearTimeout(timer);
 
         timer = setTimeout(function(){
-            socket.emit('stoppedTyping');
+            socketConnection.socket.emit('stoppedTyping');
         }, 5000);
 
-        socket.emit('typing', {
+        socketConnection.socket.emit('typing', {
             // message info
             message: 'typing...',
 
@@ -125,7 +115,7 @@ define(['socketio', 'moment', 'user'], function(io, moment, user){
     var submitMessage = function(){
         // arg 1: name of variable that we are sending
         // arg 2: the data we are sending
-        socket.emit('chat', {
+        socketConnection.socket.emit('chat', {
             // message info
             message: message.value,
             date: new Date(),
