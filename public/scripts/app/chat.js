@@ -2,32 +2,13 @@ define(['moment', 'user', 'socketConnection'], function(moment, user, socketConn
     //TODOS: Create event to handle multiple people typing at once
 
     //TODOS: Persist messages for clients logging into chat session
-
-    // Module Order: 
-    // 1. DOM Module
-    // 2. User Module
-    // 3. Socket Module
-    // 4. DOM Event Module
-
-    // or should it be more 
-    // Login Module - generate user, establish connections + display active users
-    // Feedback Module - controls feedback dom element to display concurrent active events
-    // Messaging Module - controls messaging display
-
-    // DOM Module
+    
     var message = document.getElementById('message'),
         btn = document.getElementById('send'),
         output = document.getElementById('output'),
-        feedback = document.getElementById('feedback'),
-        activeUsersList = document.getElementById('active-users-list');
-
-    // Socket Module
-    // Dependencies: DOM Module, User Module 
-    // Should it just be responsible for
-    // 1. connecting to the socket
-    // 2. associating callbacks to specific socket events?
-
-
+        feedback = document.getElementById('feedback')
+    
+    // Chat Messages Module
     // Listen for events for client's socket
     // chat handler
     socketConnection.socket.on('chat', function(data){
@@ -49,6 +30,7 @@ define(['moment', 'user', 'socketConnection'], function(moment, user, socketConn
                             '<p class="chat-message">' + data.message + '</p>'
     });
 
+    // Chat Feedback Module
     // typing handler
     socketConnection.socket.on('typing', function(data){
         feedback.innerHTML = '<p><em>' + data.userName + ' is typing...</em></p>';
@@ -57,36 +39,6 @@ define(['moment', 'user', 'socketConnection'], function(moment, user, socketConn
     // stopped typing handler
     socketConnection.socket.on('stoppedTyping', function(){
         feedback.innerHTML = '';
-    });
-
-    // connected user handler
-    socketConnection.socket.on('connectedUser', function(data){
-        output.innerHTML += '<p class="chat-new-user"><em>' + data.userName + ' has joined the chat</em></p>';
-        updateActiveUsersList(data.activeUsers);
-    });
-
-    // disconnect handler
-    socketConnection.socket.on('disconnectedUser', function(data){
-        output.innerHTML += '<p class="chat-new-user"><em>' + data.disconnectedUserName + ' has left the chat</em></p>';
-        updateActiveUsersList(data.activeUsers);
-    });
-
-    updateActiveUsersList = function(activeUsers){
-        activeUsersList.innerHTML = '';
-
-        for(var i = 0; i < activeUsers.length; i++){
-            var li = document.createElement('li');
-            li.innerHTML += activeUsers[i] + '<span class="dot"></span>';
-
-            activeUsersList.appendChild(li);
-        }
-    }
-
-    // DOM Event Handlers
-    // Dependencies: DOM Module, Socket Module
-    // Emit events based on user input
-    btn.addEventListener('click', function(){
-        submitMessage();
     });
 
     var timer = null;
@@ -104,6 +56,11 @@ define(['moment', 'user', 'socketConnection'], function(moment, user, socketConn
             // user info
             userName: user.userName
         });
+    });
+
+    // Chat Submit Module
+    btn.addEventListener('click', function(){
+        submitMessage();
     });
 
     message.addEventListener('keyup', function(event){
